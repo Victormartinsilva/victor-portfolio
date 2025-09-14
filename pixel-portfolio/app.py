@@ -459,8 +459,8 @@ def assets(filename):
 
 # Bloco que executa apenas quando o arquivo é executado diretamente (não importado)
 if __name__ == '__main__':
-    # Inicia o servidor Flask com as seguintes configurações:
-    # host='0.0.0.0': permite acesso de qualquer IP (não apenas localhost)
-    # port=5000: define a porta 5000 para acessar a aplicação
-    # debug=True: ativa o modo de depuração (reinicia automaticamente quando o código muda)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
+
+# Para Vercel - exportar app
+application = app
