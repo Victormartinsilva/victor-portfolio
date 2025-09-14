@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ perfil.nome }} - {{ perfil.titulo }} | Portfólio Profissional</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Portfólio de {{ perfil.nome }}, {{ perfil.titulo }}. Especialista em análise de dados, agricultura de precisão, Python, Power BI e desenvolvimento de projetos industriais.">
+    <meta name="keywords" content="Victor Martins Silva, Analista Suporte, Engenheiro Agrícola, Python, Power BI, QGIS, SolidWorks, Agricultura Precisão, Análise Dados">
+    <meta name="author" content="{{ perfil.nome }}">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{ perfil.nome }} - {{ perfil.titulo }}">
+    <meta property="og:description" content="Portfólio profissional de {{ perfil.nome }}, especialista em análise de dados e agricultura de precisão com {{ perfil.anos_experiencia }}+ anos de experiência.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:image" content="{{ url_for('assets', filename='avatar.png', _external=True) }}">
+    <meta property="og:locale" content="pt_BR">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ perfil.nome }} - {{ perfil.titulo }}">
+    <meta name="twitter:description" content="Portfólio profissional de {{ perfil.nome }}, especialista em análise de dados e agricultura de precisão.">
+    <meta name="twitter:image" content="{{ url_for('assets', filename='avatar.png', _external=True) }}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.url }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍💻</text></svg>">
+    <link rel="apple-touch-icon" href="{{ url_for('assets', filename='avatar.png') }}">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX', {
+            page_title: 'Victor Martins - Analista de Dados',
+            page_location: window.location.href,
+            content_group1: 'Portfolio',
+            custom_map: {'dimension1': 'user_type'}
+        });
+        
+        // Track custom events
+        function trackEvent(action, category, label, value) {
+            gtag('event', action, {
+                event_category: category,
+                event_label: label,
+                value: value
+            });
+        }
+    </script>
+    
+    <!-- Performance Monitoring -->
+    <script>
+        // Core Web Vitals tracking
+        function trackWebVitals() {
+            function sendToAnalytics({name, value, id}) {
+                gtag('event', name, {
+                    event_category: 'Web Vitals',
+                    event_label: id,
+                    value: Math.round(name === 'CLS' ? value * 1000 : value),
+                    non_interaction: true,
+                });
+            }
+            
+            // Load web-vitals library
+            import('https://unpkg.com/web-vitals@3/dist/web-vitals.js').then(({onCLS, onFID, onFCP, onLCP, onTTFB}) => {
+                onCLS(sendToAnalytics);
+                onFID(sendToAnalytics);
+                onFCP(sendToAnalytics);
+                onLCP(sendToAnalytics);
+                onTTFB(sendToAnalytics);
+            });
+        }
+        
+        if (document.readyState === 'complete') {
+            trackWebVitals();
+        } else {
+            window.addEventListener('load', trackWebVitals);
+        }
+    </script>
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "{{ perfil.nome }}",
+        "jobTitle": "{{ perfil.titulo }}",
+        "description": "{{ perfil.sobre }}",
+        "url": "{{ request.url }}",
+        "email": "{{ contatos.email }}",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "São Paulo",
+            "addressRegion": "SP",
+            "addressCountry": "BR"
+        },
+        "alumniOf": [
+            {
+                "@type": "EducationalOrganization",
+                "name": "{{ educacao.graduacao.instituicao }}"
+            },
+            {
+                "@type": "EducationalOrganization", 
+                "name": "{{ educacao.pos_graduacao.instituicao }}"
+            }
+        ],
+        "knowsAbout": ["Python", "Power BI", "QGIS", "SolidWorks", "Agricultura de Precisão", "Análise de Dados"],
+        "sameAs": [
+            "{{ contatos.linkedin }}",
+            "{{ contatos.github }}"
+        ]
+    }
+    </script>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#4a90e2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Victor Portfolio">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- D3.js Library -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jasondavies/d3-cloud/build/d3.layout.cloud.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-avatar">
+                <img src="{{ url_for('assets', filename='avatar.png') }}" alt="Avatar" class="loading-img">
+            </div>
+            <div class="loading-text">
+                <h2>{{ perfil.nome }}</h2>
+                <p>{{ perfil.titulo }}</p>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-fill"></div>
+            </div>
+            <div class="loading-percentage">0%</div>
+        </div>
+    </div>
+
+    <div class="game-layout">
+        <!-- Sidebar com perfil -->
+        <div class="sidebar">
+            <div class="profile-sidebar">
+                <div class="sidebar-avatar">
+                <img src="{{ url_for('assets', filename='avatar.png') }}" alt="Avatar" class="avatar">
+            </div>
+                
+                <h2 class="profile-name">{{ perfil.nome }}</h2>
+                <p class="profile-title">{{ perfil.titulo }}</p>
+                <p class="profile-level">Nível {{ perfil.nivel }}</p>
+                
+                <!-- Barra de XP -->
+                <div class="xp-container">
+                    <div class="xp-bar">
+                        <div class="xp-fill" style="width: {{ (perfil.xp / perfil.xp_max * 100) }}%;"></div>
+                    </div>
+                        <div class="xp-text">{{ perfil.xp }}/{{ perfil.xp_max }} XP</div>
+                </div>
+                
+                <!-- Stats -->
+                <div class="stats-sidebar">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ perfil.anos_experiencia }}+</span>
+                        <span class="stat-label">Anos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ perfil.projetos_concluidos }}+</span>
+                        <span class="stat-label">Projetos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ perfil.tecnologias_dominadas }}+</span>
+                        <span class="stat-label">Skills</span>
+                    </div>
+                </div>
+                
+                <!-- Badges de Certificações -->
+                <div class="certification-badges">
+                    <div class="badge-item" title="Pós-graduação em Engenharia de Software">
+                        <span class="badge-icon">🎓</span>
+                        <span class="badge-text">Pós-Grad</span>
+                    </div>
+                    <div class="badge-item" title="Engenheiro Agrícola - UNIOESTE">
+                        <span class="badge-icon">🌾</span>
+                        <span class="badge-text">Eng. Agrícola</span>
+                    </div>
+                    <div class="badge-item" title="Especialista em Power BI">
+                        <span class="badge-icon">📊</span>
+                        <span class="badge-text">Power BI</span>
+                    </div>
+                    <div class="badge-item" title="Linguagem de Programação - Python">
+                        <span class="badge-icon">🐍</span>
+                        <span class="badge-text">Python</span>
+                    </div>
+                </div>
+                
+                <!-- Links de contato -->
+                <div class="contact-links">
+                    <a href="mailto:{{ contatos.email }}" class="contact-btn email-btn" title="Email">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </a>
+                    <a href="{{ contatos.linkedin }}" target="_blank" class="contact-btn linkedin-btn" title="LinkedIn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </a>
+                    <a href="{{ contatos.github }}" target="_blank" class="contact-btn github-btn" title="GitHub">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="{{ contatos.whatsapp }}" target="_blank" class="contact-btn whatsapp-btn" title="WhatsApp">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <!-- Toggle Modo Claro/Escuro -->
+                <div class="theme-toggle">
+                    <button id="theme-toggle-btn" class="theme-btn" onclick="toggleTheme()">
+                        <span id="theme-icon">🌙</span>
+                        <span id="theme-text">Modo Claro</span>
+                    </button>
+                </div>
+                
+                <!-- Toggle Layout Gamificado/Tradicional -->
+                <div class="layout-toggle">
+                    <button id="layout-toggle-btn" class="layout-btn" onclick="switchLayout()">
+                        <span id="layout-icon">🎮</span>
+                        <span id="layout-text">Modo Tradicional</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área principal de conteúdo -->
+        <div class="main-content">
+            <!-- Header com título e fundo animado -->
+            <header class="game-header">
+                <!-- Fundo animado atrás do título -->
+                <div class="animated-background">
+                    <div class="floating-islands">
+                        <div class="island island-1">🏝️</div>
+                        <div class="island island-2">🌴</div>
+                        <div class="island island-3">🏔️</div>
+                        <div class="island island-4">🌊</div>
+                    </div>
+                    <div class="clouds">
+                        <div class="cloud cloud-1">☁️</div>
+                        <div class="cloud cloud-2">⛅</div>
+                        <div class="cloud cloud-3">☁️</div>
+                    </div>
+                </div>
+                
+                <div class="header-content">
+                    <h1 class="pixel-title">{{ perfil.nome }} Portfólio</h1>
+                    <p class="subtitle">{{ perfil.titulo }}</p>
+                </div>
+            </header>
+            
+            <!-- Container dos cards accordion -->
+            <div class="accordion-container">
+                <!-- Card 1: Sobre Mim -->
+                <div class="accordion-card active" data-card="about">
+                    <div class="card-header" onclick="toggleCard('about')">
+                        <div class="card-number">1</div>
+                        <h3 class="card-title">👨‍💻 Sobre Mim</h3>
+                        <div class="card-toggle">▼</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="about-description">
+                            <p>{{ perfil.sobre }}</p>
+                        </div>
+                        
+                        <div class="progress-stats">
+                            <div class="progress-item">
+                                <span class="progress-label">Experiência</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" data-width="90"></div>
+                                </div>
+                                <span class="progress-value">{{ perfil.anos_experiencia }} anos</span>
+                            </div>
+                            <div class="progress-item">
+                                <span class="progress-label">Projetos</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" data-width="85"></div>
+                                </div>
+                                <span class="progress-value">{{ perfil.projetos_concluidos }}+ concluídos</span>
+                            </div>
+                            <div class="progress-item">
+                                <span class="progress-label">Tecnologias</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" data-width="80"></div>
+                                </div>
+                                <span class="progress-value">{{ perfil.tecnologias_dominadas }} dominadas</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Seção de Idiomas -->
+                        <div class="languages-section">
+                            <h4 class="section-subtitle">🌍 Idiomas</h4>
+                            <div class="languages-grid">
+                                {% for key, idioma in idiomas.items() %}
+                                <div class="language-item">
+                                    <div class="language-header">
+                                        <span class="language-flag">{{ idioma.icone }}</span>
+                                        <span class="language-name">{{ idioma.nome }}</span>
+                                        <span class="language-level">{{ idioma.nivel }}</span>
+                                    </div>
+                                    <div class="language-bar">
+                                        <div class="language-fill" data-width="{{ idioma.porcentagem }}"></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Experiência Profissional -->
+                <div class="accordion-card" data-card="experience">
+                    <div class="card-header" onclick="toggleCard('experience')">
+                        <div class="card-number">2</div>
+                        <h3 class="card-title">💼 Experiência Profissional</h3>
+                        <div class="card-toggle">▶</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="experience-timeline">
+                            {% for exp in experiencias %}
+                            <div class="experience-item {% if exp.atual %}current{% endif %}">
+                                <div class="experience-icon">{{ exp.icone }}</div>
+                                <div class="experience-content">
+                                    <div class="experience-header">
+                                        <h4 class="experience-title">{{ exp.cargo }}</h4>
+                                        {% if exp.atual %}
+                                        <span class="current-badge">Atual</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="experience-company">{{ exp.empresa }}</p>
+                                    <p class="experience-period">{{ exp.periodo }}</p>
+                                    <p class="experience-description">{{ exp.descricao }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Projetos -->
+                <div class="accordion-card" data-card="projects">
+                    <div class="card-header" onclick="toggleCard('projects')">
+                        <div class="card-number">3</div>
+                        <h3 class="card-title">📂 Projetos Épicos</h3>
+                        <div class="card-toggle">▶</div>
+                    </div>
+                    <div class="card-content">
+            <div class="projects-grid">
+                {% for projeto in projetos %}
+                            <a href="{{ projeto.link }}" target="_blank" class="project-item">
+                    <div class="project-icon">{{ projeto.icone }}</div>
+                                <div class="project-info">
+                    <h4 class="project-name">{{ projeto.nome }}</h4>
+                    <p class="project-tech">{{ projeto.tecnologia }}</p>
+                                    <p class="project-description">{{ projeto.descricao }}</p>
+                                    {% if projeto.tipo == 'github' %}
+                                        <span class="project-badge github">📂 Código</span>
+                                    {% else %}
+                                        <span class="project-badge demo">🚀 Demo</span>
+                                    {% endif %}
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Habilidades ATUALIZADO -->
+                <div class="accordion-card" data-card="skills">
+                    <div class="card-header" onclick="toggleCard('skills')">
+                        <div class="card-number">4</div>
+                        <h3 class="card-title">⚡ Habilidades Técnicas</h3>
+                        <div class="card-toggle">▶</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="skills-grid">
+                            <!-- Linguagens de Programação -->
+                            <div class="skill-category">
+                                <h4 class="category-title">💻 Programação</h4>
+                                <div class="skill-item">
+                                    <span class="skill-name">Python</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+                                    <span class="skill-percent">85%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">R</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+                                    <span class="skill-percent">90%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">C</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+                                    <span class="skill-percent">75%</span>
+                                </div>
+                            </div>
+
+                            <!-- Ferramentas CAD/Projeto -->
+                            <div class="skill-category">
+                                <h4 class="category-title">📐 CAD & Projetos</h4>
+                                <div class="skill-item">
+                                    <span class="skill-name">AutoCAD</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+                                    <span class="skill-percent">95%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">SolidWorks</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+                                    <span class="skill-percent">90%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">SketchUp</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
+                                    <span class="skill-percent">80%</span>
+                                </div>
+                            </div>
+
+                            <!-- Business Intelligence -->
+                            <div class="skill-category">
+                                <h4 class="category-title">📊 Business Intelligence</h4>
+                                <div class="skill-item">
+                                    <span class="skill-name">Power BI</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+                                    <span class="skill-percent">90%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">Excel Avançado</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+                                    <span class="skill-percent">95%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">Tableau</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
+                                    <span class="skill-percent">70%</span>
+                                </div>
+                            </div>
+
+                            <!-- Geotecnologias -->
+                            <div class="skill-category">
+                                <h4 class="category-title">🗺️ Geotecnologias</h4>
+                                <div class="skill-item">
+                                    <span class="skill-name">QGIS</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+                                    <span class="skill-percent">85%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">Análise Geoestatística</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+                                    <span class="skill-percent">90%</span>
+                                </div>
+                            </div>
+
+                            <!-- Programação Industrial -->
+                            <div class="skill-category">
+                                <h4 class="category-title">⚙️ Programação Industrial</h4>
+                                <div class="skill-item">
+                                    <span class="skill-name">LANTEK</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+                                    <span class="skill-percent">85%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">Nesting</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
+                                    <span class="skill-percent">80%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">Programação CNC</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+                                    <span class="skill-percent">75%</span>
+            </div>
+        </div>
+
+                            <!-- Outras Ferramentas -->
+                            <div class="skill-category">
+                                <h4 class="category-title">🛠️ Outras Ferramentas</h4>
+                                <div class="skill-item">
+                                    <span class="skill-name">Lumens</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
+                                    <span class="skill-percent">70%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">Ftool</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+                                    <span class="skill-percent">75%</span>
+                                </div>
+                <div class="skill-item">
+                                    <span class="skill-name">Visualventos</span>
+                                    <div class="skill-bar"><div class="skill-fill" data-width="65"></div></div>
+                                    <span class="skill-percent">65%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: Competências MELHORADO -->
+                <div class="accordion-card" data-card="competencies">
+                    <div class="card-header" onclick="toggleCard('competencies')">
+                        <div class="card-number">5</div>
+                        <h3 class="card-title">🎯 Competências-Chave</h3>
+                        <div class="card-toggle">▶</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="competencies-list">
+                            <div class="competency-item">
+                                <div class="competency-icon">📊</div>
+                                <div class="competency-info">
+                                    <h4>Análise de Dados Estratégica</h4>
+                                    <p>Desenvolvimento de análises avançadas, criação de insights estratégicos e automação de processos analíticos para tomada de decisões</p>
+                                </div>
+                            </div>
+                            
+                            <div class="competency-item">
+                                <div class="competency-icon">📊</div>
+                                <div class="competency-info">
+                                    <h4>Análise e Otimização de Processos</h4>
+                                    <p>Identificação de gargalos, implementação de melhorias contínuas e automação de processos produtivos</p>
+                                </div>
+                            </div>
+                            
+                            <div class="competency-item">
+                                <div class="competency-icon">🏗️</div>
+                                <div class="competency-info">
+                                    <h4>Desenvolvimento de Projetos</h4>
+                                    <p>Projetos de equipamentos industriais, modelagem 3D, documentação técnica e viabilidade econômica</p>
+                                </div>
+                            </div>
+                            
+                            <div class="competency-item">
+                                <div class="competency-icon">🚜</div>
+                                <div class="competency-info">
+                                    <h4>Agricultura de Precisão</h4>
+                                    <p>Tecnologias agrícolas avançadas, análise geoestatística e otimização de práticas agrícolas</p>
+                                </div>
+                            </div>
+                            
+                            <div class="competency-item">
+                                <div class="competency-icon">⚙️</div>
+                                <div class="competency-info">
+                                    <h4>Programação e Automação Industrial</h4>
+                                    <p>Programação CNC, LANTEK, Nesting e controle de produção para otimização de recursos</p>
+                                </div>
+                            </div>
+                            
+                            <div class="competency-item">
+                                <div class="competency-icon">📈</div>
+                                <div class="competency-info">
+                                    <h4>Metodologias de Melhoria</h4>
+                                    <p>SCRUM, BPMN, 5S, PDCA e ferramentas de agilidade para gestão de projetos e produtos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Educação -->
+                <div class="accordion-card" data-card="education">
+                    <div class="card-header" onclick="toggleCard('education')">
+                        <div class="card-number">6</div>
+                        <h3 class="card-title">🎓 Educação & Certificações</h3>
+                        <div class="card-toggle">▶</div>
+                    </div>
+                    <div class="card-content">
+                        <!-- Pós-graduação -->
+                        <div class="education-item">
+                            <div class="education-icon">{{ educacao.pos_graduacao.icone }}</div>
+                            <div class="education-info">
+                                <h4 class="education-title">{{ educacao.pos_graduacao.curso }}</h4>
+                                <p class="education-institution">{{ educacao.pos_graduacao.instituicao }}</p>
+                                <p class="education-year">{{ educacao.pos_graduacao.ano }} • {{ educacao.pos_graduacao.status }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Graduação -->
+                        <div class="education-item">
+                            <div class="education-icon">{{ educacao.graduacao.icone }}</div>
+                            <div class="education-info">
+                                <h4 class="education-title">{{ educacao.graduacao.curso }}</h4>
+                                <p class="education-institution">{{ educacao.graduacao.instituicao }}</p>
+                                <p class="education-year">{{ educacao.graduacao.ano }} • {{ educacao.graduacao.status }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Cursos Alura -->
+                        <div class="education-section">
+                            <h4 class="section-subtitle">📚 Cursos Especializados - Alura</h4>
+                            <div class="courses-grid">
+                                {% for curso in educacao.cursos_alura %}
+                                <div class="course-item">
+                                    <span class="course-icon">✅</span>
+                                    <span class="course-name">{{ curso }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 7: Visualizações de Dados -->
+                <div class="accordion-card" data-card="visualizations">
+                    <div class="card-header" onclick="toggleCard('visualizations')">
+                        <div class="card-number">7</div>
+                        <h3 class="card-title">📊 Visualizações de Dados</h3>
+                        <div class="card-toggle">▶</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="visualizations-grid">
+                            <!-- Radar Chart de Competências -->
+                            <div class="chart-container">
+                                <div id="skills-radar" class="d3-chart"></div>
+                                <p class="chart-description">Radar das principais competências técnicas com níveis de proficiência</p>
+                            </div>
+
+                            <!-- Timeline da Carreira -->
+                            <div class="chart-container">
+                                <div id="career-timeline" class="d3-chart"></div>
+                                <p class="chart-description">Timeline interativa da trajetória profissional</p>
+                            </div>
+
+                            <!-- Word Cloud de Tecnologias -->
+                            <div class="chart-container">
+                                <div id="tech-wordcloud" class="d3-chart"></div>
+                                <p class="chart-description">Nuvem de palavras das tecnologias dominadas</p>
+                            </div>
+
+                            <!-- Mapa de Projetos -->
+                            <div class="chart-container">
+                                <div id="projects-map" class="d3-chart"></div>
+                                <p class="chart-description">Mapa interativo dos projetos desenvolvidos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 8: Contato -->
+                <div class="accordion-card" data-card="contact">
+                    <div class="card-header" onclick="toggleCard('contact')">
+                        <div class="card-number">8</div>
+                        <h3 class="card-title">💬 Contato</h3>
+                        <div class="card-toggle">▶</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="contact-form">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    <div class="flash-messages">
+                                        {% for category, message in messages %}
+                                            <div class="flash-message flash-{{ category }}">
+                                                {{ message }}
+                                                <button class="close-flash" onclick="this.parentElement.style.display='none'">&times;</button>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                            
+                            <form action="{{ url_for('processar_contato') }}" method="POST">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="nome">👤 Nome</label>
+                                        <input type="text" id="nome" name="nome" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">📧 Email</label>
+                                        <input type="email" id="email" name="email" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="assunto">📋 Assunto</label>
+                                    <input type="text" id="assunto" name="assunto" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="mensagem">💭 Mensagem</label>
+                                    <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="submit-btn">
+                                        🚀 Enviar Mensagem
+                                    </button>
+                                    <button type="reset" class="reset-btn">
+                                        🔄 Limpar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão Voltar ao Topo -->
+    <button id="back-to-top" class="back-to-top" onclick="scrollToTop()">
+        <span>🚀</span>
+    </button>
+
+    <script src="{{ url_for('static', filename='d3-charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                        
+                        // Track PWA installation
+                        trackEvent('service_worker_registered', 'PWA', 'Success');
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                        
+                        // Track PWA installation failure
+                        trackEvent('service_worker_failed', 'PWA', 'Error');
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button or banner
+            console.log('PWA install prompt available');
+            trackEvent('install_prompt_shown', 'PWA', 'Available');
+        });
+
+        // Track PWA usage
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('PWA was installed');
+            trackEvent('app_installed', 'PWA', 'Success');
+        });
+
+        // Initialize D3.js Charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Aguardar D3.js carregar
+            if (typeof d3 !== 'undefined' && window.portfolioCharts) {
+                initializeCharts();
+            } else {
+                setTimeout(initializeCharts, 1000);
+            }
+        });
+
+        function initializeCharts() {
+            // Dados para o radar de competências
+            const skillsData = [
+                { skill: 'Python', value: 85 },
+                { skill: 'Power BI', value: 90 },
+                { skill: 'R', value: 88 },
+                { skill: 'AutoCAD', value: 95 },
+                { skill: 'QGIS', value: 83 },
+                { skill: 'SolidWorks', value: 87 }
+            ];
+
+            // Dados para timeline da carreira
+            const careerData = [
+                { position: 'Analista de Dados', company: 'EICON', start: '2024-10', end: 'Atual', complexity: 5 },
+                { position: 'Analista Agricultura Precisão', company: 'Unimaq-John Deere', start: '2023-10', end: '2024-10', complexity: 4 },
+                { position: 'Auxiliar PCP', company: 'FK Steel', start: '2023-02', end: '2023-06', complexity: 3 },
+                { position: 'Estagiário Projetos', company: 'FK Steel', start: '2022-10', end: '2023-02', complexity: 3 },
+                { position: 'Pesquisador Científico', company: 'CNPq', start: '2017-08', end: '2019-05', complexity: 4 }
+            ];
+
+            // Dados para word cloud
+            const techData = [
+                { name: 'Python', level: 30 },
+                { name: 'Power BI', level: 35 },
+                { name: 'R', level: 28 },
+                { name: 'AutoCAD', level: 32 },
+                { name: 'QGIS', level: 26 },
+                { name: 'SolidWorks', level: 29 },
+                { name: 'Excel', level: 25 },
+                { name: 'MySQL', level: 22 },
+                { name: 'LANTEK', level: 20 },
+                { name: 'Tableau', level: 18 }
+            ];
+
+            // Dados para mapa de projetos
+            const projectsData = [
+                { name: 'Análise CNPq', icon: '🌾', complexity: 5 },
+                { name: 'FK Steel', icon: '🏗️', complexity: 4 },
+                { name: 'Sistema PCP', icon: '📊', complexity: 4 },
+                { name: 'CNC Automation', icon: '⚙️', complexity: 3 },
+                { name: 'Agri Precision', icon: '🚜', complexity: 4 },
+                { name: 'Portfolio', icon: '🎮', complexity: 3 }
+            ];
+
+            // Criar gráficos apenas se os containers existirem
+            if (document.getElementById('skills-radar')) {
+                window.portfolioCharts.createSkillsRadar('skills-radar', skillsData);
+            }
+            
+            if (document.getElementById('career-timeline')) {
+                window.portfolioCharts.createCareerTimeline('career-timeline', careerData);
+            }
+            
+            if (document.getElementById('tech-wordcloud')) {
+                window.portfolioCharts.createTechWordCloud('tech-wordcloud', techData);
+            }
+            
+            if (document.getElementById('projects-map')) {
+                window.portfolioCharts.createProjectsMap('projects-map', projectsData);
+            }
+
+            // Track chart initialization
+            trackEvent('d3_charts_initialized', 'Visualizations', 'Success');
+        }
+    </script></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+{
+  "name": "Victor Martins da Silva - Portfólio Profissional",
+  "short_name": "Victor Portfolio",
+  "description": "Portfólio profissional de Victor Martins da Silva, Analista de Dados especializado em agricultura de precisão e análise geoestatística",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1419",
+  "theme_color": "#4a90e2",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity", "portfolio"],
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/assets/avatar.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/avatar.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Versão Desktop do Portfólio"
+    },
+    {
+      "src": "/assets/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Versão Mobile do Portfólio"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Sobre Mim",
+      "short_name": "Sobre",
+      "description": "Informações profissionais e pessoais",
+      "url": "/#about",
+      "icons": [{"src": "/assets/avatar.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "Projetos",
+      "short_name": "Projetos",
+      "description": "Portfólio de projetos desenvolvidos",
+      "url": "/#projects",
+      "icons": [{"src": "/assets/avatar.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "Contato",
+      "short_name": "Contato",
+      "description": "Formulário de contato e redes sociais",
+      "url": "/#contact",
+      "icons": [{"src": "/assets/avatar.png", "sizes": "96x96"}]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "https://victormartins.dev"
+    }
+  ]
+}

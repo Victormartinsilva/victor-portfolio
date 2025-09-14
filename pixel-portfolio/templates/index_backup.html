@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<!-- Declaração do tipo de documento HTML5 -->
+<html lang="pt-br">
+<!-- Elemento raiz HTML com idioma definido como português brasileiro -->
+<head>
+    <!-- Seção head contém metadados e configurações da página -->
+    <meta charset="UTF-8">
+    <!-- Define a codificação de caracteres como UTF-8 (suporte a acentos e caracteres especiais) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Configuração para responsividade em dispositivos móveis -->
+    <title>{{ perfil.nome }} - Portfólio Pixel Art</title>
+    <!-- Título da página usando dados do Flask (Jinja2 template) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_backup.css') }}">
+    <!-- Link para o arquivo CSS - url_for gera a URL correta para arquivos estáticos -->
+</head>
+<body>
+    <!-- Início do corpo da página -->
+    
+    <!-- Fundo animado com múltiplas camadas para efeito parallax -->
+    <div class="parallax-container">
+        <!-- Container principal para o efeito de parallax (fundo que se move em velocidades diferentes) -->
+        <div class="parallax-layer layer-1"></div>
+        <!-- Primeira camada do parallax (mais lenta) -->
+        <div class="parallax-layer layer-2"></div>
+        <!-- Segunda camada do parallax (velocidade média) -->
+        <div class="parallax-layer layer-3"></div>
+        <!-- Terceira camada do parallax (mais rápida) -->
+        <div class="stars"></div>
+        <!-- Camada de estrelas animadas no fundo -->
+    </div>
+
+    <!-- Conteúdo principal da página -->
+    <div class="main-container">
+        <!-- Container que engloba todo o conteúdo visível -->
+        
+        <header class="header">
+            <!-- Cabeçalho da página -->
+            <h1 class="pixel-title">⚔️ {{ perfil.nome }}'s Portfolio</h1>
+            <!-- Título principal usando o nome vindo do Flask -->
+            <p class="subtitle">{{ perfil.titulo }}</p>
+            <!-- Subtítulo com o título profissional vindo do Flask -->
+        </header>
+
+        <!-- Card do perfil (seção principal com informações do usuário) -->
+        <div class="profile-card">
+            <!-- Container do card de perfil -->
+            <div class="avatar-container">
+                <!-- Container para o avatar/foto de perfil -->
+                <img src="{{ url_for('assets', filename='avatar.png') }}" alt="Avatar" class="avatar">
+                <!-- Imagem do avatar - url_for('assets') chama a rota /assets/ do Flask -->
+                <div class="avatar-glow"></div>
+                <!-- Div para efeito de brilho ao redor do avatar -->
+            </div>
+            <div class="profile-info">
+                <!-- Container com informações textuais do perfil -->
+                <h2 class="profile-name">{{ perfil.nome }}</h2>
+                <!-- Nome do perfil vindo do Flask -->
+                <p class="level">Nível {{ perfil.nivel }}</p>
+                <!-- Nível do "personagem" (gamificação) -->
+                <div class="xp-container">
+                    <!-- Container para a barra de experiência -->
+                    <div class="xp-bar">
+                        <!-- Barra de experiência (XP) -->
+                        <div class="xp-fill" style="width: {{ (perfil.xp / perfil.xp_max * 100) }}%;"></div>
+                        <!-- Preenchimento da barra XP - calcula porcentagem dinamicamente -->
+                        <div class="xp-text">{{ perfil.xp }}/{{ perfil.xp_max }} XP</div>
+                        <!-- Texto mostrando XP atual e máximo -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botões de Toggle -->
+        <div class="toggle-buttons">
+            <!-- Toggle Modo Claro/Escuro -->
+            <button id="theme-toggle-btn" class="toggle-btn theme-btn" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Modo Claro</span>
+            </button>
+            
+            <!-- Toggle Layout Tradicional/Gamificado -->
+            <button id="layout-toggle-btn" class="toggle-btn layout-btn" onclick="switchLayout()">
+                <span id="layout-icon">📱</span>
+                <span id="layout-text">Modo Gamificado</span>
+            </button>
+        </div>
+
+        <!-- Seção Sobre Mim -->
+        <div class="about-section">
+            <!-- Container da seção sobre mim -->
+            <h3 class="section-title">👨‍💻 Sobre Mim</h3>
+            <!-- Título da seção sobre mim -->
+            <div class="about-card">
+                <!-- Card principal com informações sobre mim -->
+                <div class="about-content">
+                    <!-- Conteúdo textual sobre mim -->
+                    <p class="about-description">{{ perfil.sobre }}</p>
+                    <!-- Descrição pessoal vinda do Flask -->
+                    
+                    <div class="stats-container">
+                        <!-- Container com estatísticas profissionais -->
+                        <div class="stat-item">
+                            <!-- Item individual de estatística -->
+                            <span class="stat-number">{{ perfil.anos_experiencia }}+</span>
+                            <!-- Número da estatística -->
+                            <span class="stat-label">Anos de Experiência</span>
+                            <!-- Rótulo da estatística -->
+                        </div>
+                        <div class="stat-item">
+                            <!-- Segunda estatística: projetos concluídos -->
+                            <span class="stat-number">{{ perfil.projetos_concluidos }}+</span>
+                            <span class="stat-label">Projetos Concluídos</span>
+                        </div>
+                        <div class="stat-item">
+                            <!-- Terceira estatística: tecnologias -->
+                            <span class="stat-number">{{ perfil.tecnologias_dominadas }}+</span>
+                            <span class="stat-label">Tecnologias</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Contato -->
+        <div class="contact-section">
+            <!-- Container da seção de contato -->
+            <h3 class="section-title">📞 Vamos Conversar?</h3>
+            <!-- Título da seção de contato -->
+            <div class="contact-grid">
+                <!-- Grid com links de contato -->
+                <a href="mailto:{{ contatos.email }}" class="contact-card email-card">
+                    <!-- Link de email -->
+                    <div class="contact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </div>
+                    <!-- Ícone do email -->
+                    <div class="contact-info">
+                        <!-- Informações do contato -->
+                        <h4 class="contact-title">Email</h4>
+                        <!-- Título do tipo de contato -->
+                        <p class="contact-detail">{{ contatos.email }}</p>
+                        <!-- Detalhes do contato -->
+                    </div>
+                    <div class="contact-glow"></div>
+                    <!-- Efeito de brilho no card -->
+                </a>
+
+                <a href="{{ contatos.linkedin }}" target="_blank" class="contact-card linkedin-card">
+                    <!-- Link do LinkedIn (abre em nova aba) -->
+                    <div class="contact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </div>
+                    <div class="contact-info">
+                        <h4 class="contact-title">LinkedIn</h4>
+                        <p class="contact-detail">Conecte-se comigo</p>
+                    </div>
+                    <div class="contact-glow"></div>
+                </a>
+
+                <a href="{{ contatos.github }}" target="_blank" class="contact-card github-card">
+                    <!-- Link do GitHub -->
+                    <div class="contact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </div>
+                    <div class="contact-info">
+                        <h4 class="contact-title">GitHub</h4>
+                        <p class="contact-detail">Veja meus códigos</p>
+                    </div>
+                    <div class="contact-glow"></div>
+                </a>
+
+                <a href="{{ contatos.whatsapp }}" target="_blank" class="contact-card whatsapp-card">
+                    <!-- Link do WhatsApp -->
+                    <div class="contact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"/>
+                        </svg>
+                    </div>
+                    <div class="contact-info">
+                        <h4 class="contact-title">WhatsApp</h4>
+                        <p class="contact-detail">{{ contatos.telefone }}</p>
+                    </div>
+                    <div class="contact-glow"></div>
+                </a>
+
+                <div class="contact-card location-card">
+                    <!-- Card de localização (sem link) -->
+                    <div class="contact-icon">📍</div>
+                    <div class="contact-info">
+                        <h4 class="contact-title">Localização</h4>
+                        <p class="contact-detail">{{ contatos.localizacao }}</p>
+                    </div>
+                    <div class="contact-glow"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de projetos -->
+        <div class="projects-section">
+            <!-- Container da seção de projetos -->
+            <h3 class="section-title">📂 Projetos Épicos</h3>
+            <!-- Título da seção de projetos -->
+            <div class="projects-grid">
+                <!-- Grid (grade) que organiza os cards de projetos -->
+                {% for projeto in projetos %}
+                <!-- Loop Jinja2 que itera sobre a lista de projetos vinda do Flask -->
+                <a href="{{ projeto.link }}" target="_blank" class="project-card" data-tipo="{{ projeto.tipo }}">
+                    <!-- Card individual para cada projeto - agora é um link clicável -->
+                    <div class="project-icon">{{ projeto.icone }}</div>
+                    <!-- Ícone emoji do projeto -->
+                    <h4 class="project-name">{{ projeto.nome }}</h4>
+                    <!-- Nome do projeto -->
+                    <p class="project-tech">{{ projeto.tecnologia }}</p>
+                    <!-- Tecnologia utilizada no projeto -->
+                    <p class="project-description">{{ projeto.descricao }}</p>
+                    <!-- Descrição detalhada do projeto -->
+                    <div class="project-link-indicator">
+                        <!-- Indicador do tipo de link -->
+                        {% if projeto.tipo == 'github' %}
+                            <span class="link-badge github-badge">📂 Ver Código</span>
+                        {% else %}
+                            <span class="link-badge demo-badge">🚀 Ver Demo</span>
+                        {% endif %}
+                    </div>
+                    <div class="project-glow"></div>
+                    <!-- Div para efeito de brilho no card -->
+                </a>
+                {% endfor %}
+                <!-- Fim do loop de projetos -->
+            </div>
+        </div>
+
+        <!-- Seção de habilidades -->
+        <div class="skills-section">
+            <!-- Container da seção de habilidades -->
+            <h3 class="section-title">⚡ Habilidades</h3>
+            <!-- Título da seção de habilidades -->
+            <div class="skills-grid">
+                <!-- Grid que organiza as habilidades -->
+                <div class="skill-item">
+                    <!-- Linguagens de Programação -->
+                    <span class="skill-icon">🐍</span>
+                    <span class="skill-name">Python</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 90%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <!-- Linguagem C -->
+                    <span class="skill-icon">⚙️</span>
+                    <span class="skill-name">C/CNC</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 85%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <!-- Linguagem R -->
+                    <span class="skill-icon">📈</span>
+                    <span class="skill-name">R/Estatística</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 88%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <!-- Power BI -->
+                    <span class="skill-icon">📊</span>
+                    <span class="skill-name">Power BI</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 92%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <!-- AutoCAD -->
+                    <span class="skill-icon">📐</span>
+                    <span class="skill-name">AutoCAD</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 95%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <!-- SolidWorks -->
+                    <span class="skill-icon">🔧</span>
+                    <span class="skill-name">SolidWorks</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 87%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <!-- QGIS -->
+                    <span class="skill-icon">🗺️</span>
+                    <span class="skill-name">QGIS</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 83%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <!-- MySQL -->
+                    <span class="skill-icon">🗄️</span>
+                    <span class="skill-name">MySQL</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 80%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <!-- Metodologias -->
+                    <span class="skill-icon">🎯</span>
+                    <span class="skill-name">PDCA/5S</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 90%;"></div></div>
+                </div>
+                <div class="skill-item">
+                    <!-- Análise de Dados -->
+                    <span class="skill-icon">📋</span>
+                    <span class="skill-name">Excel Avançado</span>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 95%;"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Competências-Chave -->
+        <div class="competencies-section">
+            <!-- Container da seção de competências -->
+            <h3 class="section-title">🎯 Competências-Chave</h3>
+            <!-- Título da seção de competências -->
+            <div class="competencies-grid">
+                <!-- Grid com as competências principais -->
+                <div class="competency-card">
+                    <!-- Card de competência individual -->
+                    <div class="competency-icon">🏗️</div>
+                    <h4 class="competency-title">Projetos & Análise</h4>
+                    <p class="competency-description">Projetos de armazenamento agrícola, análise de viabilidade econômica e execução prática com metodologias PDCA, 5W2H e 5S</p>
+                </div>
+                
+                <div class="competency-card">
+                    <div class="competency-icon">💻</div>
+                    <h4 class="competency-title">Programação</h4>
+                    <p class="competency-description">Linguagens Python, C, R, JavaScript. Desde automação CNC até análises preditivas avançadas e desenvolvimento web</p>
+                </div>
+                
+                <div class="competency-card">
+                    <div class="competency-icon">🛠️</div>
+                    <h4 class="competency-title">Ferramentas Técnicas</h4>
+                    <p class="competency-description">AutoCAD, SolidWorks, SketchUp, MySQL, QGIS, Power BI. Domínio completo do pacote Office e ferramentas especializadas</p>
+                </div>
+                
+                <div class="competency-card">
+                    <div class="competency-icon">📊</div>
+                    <h4 class="competency-title">Análise Geoestatística</h4>
+                    <p class="competency-description">Análise de variáveis georreferenciadas, estatística aplicada e modelagem preditiva com R para otimização agrícola</p>
+                </div>
+                
+                <div class="competency-card">
+                    <div class="competency-icon">⚙️</div>
+                    <h4 class="competency-title">Automação</h4>
+                    <p class="competency-description">Automação de processos, programação CNC, eletrônica e conceitos de baixo nível (binário) para otimização industrial</p>
+                </div>
+                
+                <div class="competency-card">
+                    <div class="competency-icon">🤝</div>
+                    <h4 class="competency-title">Comunicação</h4>
+                    <p class="competency-description">Comunicação eficaz, trabalho em equipe, perfil analítico e dedicação para alcançar resultados de excelência</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Educação -->
+        <div class="education-section">
+            <!-- Container da seção de educação -->
+            <h3 class="section-title">🎓 Educação & Certificações</h3>
+            <!-- Título da seção de educação -->
+            <div class="education-grid">
+                <!-- Grid com informações educacionais -->
+                
+                <!-- Pós-graduação -->
+                <div class="education-card">
+                    <div class="education-icon">{{ educacao.pos_graduacao.icone }}</div>
+                    <div class="education-content">
+                        <h4 class="education-title">{{ educacao.pos_graduacao.curso }}</h4>
+                        <p class="education-institution">{{ educacao.pos_graduacao.instituicao }}</p>
+                        <p class="education-year">{{ educacao.pos_graduacao.ano }} • {{ educacao.pos_graduacao.status }}</p>
+                    </div>
+                    <div class="education-glow"></div>
+                </div>
+                
+                <!-- Graduação -->
+                <div class="education-card">
+                    <div class="education-icon">{{ educacao.graduacao.icone }}</div>
+                    <div class="education-content">
+                        <h4 class="education-title">{{ educacao.graduacao.curso }}</h4>
+                        <p class="education-institution">{{ educacao.graduacao.instituicao }}</p>
+                        <p class="education-year">{{ educacao.graduacao.ano }} • {{ educacao.graduacao.status }}</p>
+                    </div>
+                    <div class="education-glow"></div>
+                </div>
+            </div>
+            
+            <!-- Cursos Alura -->
+            <div class="courses-section">
+                <h4 class="courses-title">📚 Cursos Especializados - Alura</h4>
+                <div class="courses-list">
+                    {% for curso in educacao.cursos_alura %}
+                    <div class="course-badge">
+                        <span class="course-check">✅</span>
+                        <span class="course-text">{{ curso }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulário de Contato -->
+        <div class="contact-form-section">
+            <!-- Container da seção do formulário -->
+            <h3 class="section-title">💬 Envie uma Mensagem</h3>
+            <!-- Título da seção do formulário -->
+            
+            <!-- Exibição de mensagens flash (sucesso/erro) -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">
+                                {{ message }}
+                                <button class="close-flash" onclick="this.parentElement.style.display='none'">&times;</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <div class="contact-form-container">
+                <!-- Container do formulário -->
+                <form action="{{ url_for('processar_contato') }}" method="POST" class="contact-form">
+                    <!-- Formulário que envia dados via POST para a rota /contato -->
+                    <div class="form-row">
+                        <!-- Linha do formulário com dois campos -->
+                        <div class="form-group">
+                            <!-- Grupo do campo nome -->
+                            <label for="nome" class="form-label">👤 Nome</label>
+                            <input type="text" id="nome" name="nome" class="form-input" placeholder="Seu nome completo" required>
+                        </div>
+                        <div class="form-group">
+                            <!-- Grupo do campo email -->
+                            <label for="email" class="form-label">📧 Email</label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="seu@email.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <!-- Grupo do campo assunto -->
+                        <label for="assunto" class="form-label">📋 Assunto</label>
+                        <input type="text" id="assunto" name="assunto" class="form-input" placeholder="Assunto da mensagem" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <!-- Grupo do campo mensagem -->
+                        <label for="mensagem" class="form-label">💭 Mensagem</label>
+                        <textarea id="mensagem" name="mensagem" class="form-textarea" placeholder="Escreva sua mensagem aqui..." rows="5" required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <!-- Container dos botões do formulário -->
+                        <button type="submit" class="submit-btn">
+                            <!-- Botão de envio -->
+                            <span class="btn-icon">🚀</span>
+                            <span class="btn-text">Enviar Mensagem</span>
+                        </button>
+                        <button type="reset" class="reset-btn">
+                            <!-- Botão de limpar formulário -->
+                            <span class="btn-icon">🔄</span>
+                            <span class="btn-text">Limpar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script_backup.js') }}"></script>
+    <!-- url_for gera a URL correta para o arquivo JavaScript -->
+</body>
+</html>

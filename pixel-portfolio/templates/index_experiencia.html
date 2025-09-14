@@ -1,0 +1,28 @@
+                <!-- Card 2: Experiência Profissional -->
+                <div class="accordion-card" data-card="experience">
+                    <div class="card-header" onclick="toggleCard('experience')">
+                        <div class="card-number">2</div>
+                        <h3 class="card-title">💼 Experiência Profissional</h3>
+                        <div class="card-toggle">▶</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="experience-timeline">
+                            {% for exp in experiencias %}
+                            <div class="experience-item {% if exp.atual %}current{% endif %}">
+                                <div class="experience-icon">{{ exp.icone }}</div>
+                                <div class="experience-content">
+                                    <div class="experience-header">
+                                        <h4 class="experience-title">{{ exp.cargo }}</h4>
+                                        {% if exp.atual %}
+                                        <span class="current-badge">Atual</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="experience-company">{{ exp.empresa }}</p>
+                                    <p class="experience-period">{{ exp.periodo }}</p>
+                                    <p class="experience-description">{{ exp.descricao }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
